@@ -28,7 +28,13 @@ module.exports = function(config, elasticsearch) {
           realIP = xffor;
         }
         try {
-          cspData = req.body;
+          try {
+            cspData = JSON.parse(req.body.toString());
+          }
+          catch (e) {
+            cspData = {};
+          }
+
           cspData["@timestamp"] = timestamp;
           cspData["client-ip"]  = realIP;
           cspData["user-agent"] = userAgent;
@@ -42,7 +48,7 @@ module.exports = function(config, elasticsearch) {
             cspData["parse"] = "error";
             cspData["error"] = "csp-report object not found";
           }
-        } 
+        }
         catch (e) {
           cspData["parse"] = "error";
           cspData["error"] = e;
@@ -53,7 +59,7 @@ module.exports = function(config, elasticsearch) {
       function indexIntoElasticSearch(cspData, next) {
 //        console.log("Indexing to Elastic data %s", cspData);
 //        req.log.info(sprintf("Indexing to Elastic data %s", cspData));
-        var yearMonthDay = timestamp.substr(0, 10).replace(/-/g, '.');  
+        var yearMonthDay = timestamp.substr(0, 10).replace(/-/g, '.');
         elasticClient.index({
           index: config.ElasticSearchIndex + '-' + yearMonthDay,
           type: 'csp',
