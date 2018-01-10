@@ -15,7 +15,7 @@ module.exports = function(config, elasticsearch) {
   });
 
   return function(req, res, next) {
-    var cspData;
+    var cspData = {};
     var timestamp = new Date().toISOString();
     async.waterfall([
       function cspDataParse(next) {
@@ -28,12 +28,7 @@ module.exports = function(config, elasticsearch) {
           realIP = xffor;
         }
         try {
-          try {
-            cspData = JSON.parse(req.body.toString());
-          }
-          catch (e) {
-            cspData = {};
-          }
+          cspData = JSON.parse(req.body.toString());
 
           cspData["@timestamp"] = timestamp;
           cspData["client-ip"]  = realIP;
