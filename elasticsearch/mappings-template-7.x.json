@@ -1,0 +1,36 @@
+{
+  "template" : "cspdata-*",
+  "settings" : {
+    "index.refresh_interval" : "5s"
+  },
+  "mappings" : {
+    "doc" : {
+      "_all" : {"enabled" : true, "norms" : false},
+      "dynamic_templates" : [ {
+        "message_field" : {
+          "match" : "message",
+          "match_mapping_type" : "text",
+          "mapping" : {
+            "type" : "string", "index" : "analyzed", "norms" : false,
+            "fielddata" : { "format" : "disabled" }
+          }
+        }
+      }, {
+        "string_fields" : {
+          "match" : "*",
+          "match_mapping_type" : "text",
+          "mapping" : {
+            "type" : "text", "index" : "analyzed", "norms" : false,
+            "fielddata" : { "format" : "disabled" },
+            "fields" : {
+              "raw" : {"type": "text", "index" : "not_analyzed", "ignore_above" : 256}
+            }
+          }
+        }
+      } ],
+      "properties" : {
+        "@timestamp": { "type": "date" }
+      }
+    }
+  }
+}
